@@ -86,10 +86,12 @@ class Smashing_Updater {
 				if( $out_of_date ) {
 	
 					$new_files = $this->github_response['zipball_url']; // Get the ZIP
-	
+					
+					$slug = current( explode('/', $this->basename ) ); // Create valid slug
+					
 					$plugin = array( // setup our plugin info
 						'url' => $this->plugin["PluginURI"],
-						'slug' => $this->basename,
+						'slug' => $slug,
 						'package' => $new_files,
 						'new_version' => $this->github_response['tag_name']
 					);
