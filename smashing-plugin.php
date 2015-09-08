@@ -6,8 +6,9 @@
 	Author: Matthew Ray
 	Author URI: http://www.matthewray.com
 */
-
-include_once( plugin_dir_path( __FILE__ ) . 'updater.php' );
+if( ! class_exists( 'Smashing_Updater' ) ){
+	include_once( plugin_dir_path( __FILE__ ) . 'updater.php' );
+}
 
 $updater = new Smashing_Updater( __FILE__ );
 $updater->set_username( 'rayman813' );
