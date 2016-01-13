@@ -1,4 +1,4 @@
-<?php 
+<?php
 /*
 	Plugin Name: Smashing Plugin
 	Description: This is for updating your Wordpress plugin.
@@ -12,8 +12,8 @@ if( ! class_exists( 'Smashing_Updater' ) ){
 
 $updater = new Smashing_Updater( __FILE__ );
 $updater->set_username( 'rayman813' );
-$updater->set_repository( 'smashing-plugin' );
-/* 
+$updater->set_repository( 'smashing-updater-plugin' );
+/*
 	$updater->authorize( 'abcdefghijk1234567890' ); // Your auth code goes here for private repos
 */
 $updater->initialize();
