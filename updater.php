@@ -48,19 +48,17 @@ class Smashing_Updater {
 	private function get_repository_info() {
 	    if ( is_null( $this->github_response ) ) { // Do we have a response?
 	        $request_uri = sprintf( 'https://api.github.com/repos/%s/%s/releases', $this->username, $this->repository ); // Build URI
+		    
+		$args = array();
 
 	        if( $this->authorize_token ) { // Is there an access token?
-	            $request_uri = add_query_arg( 'access_token', $this->authorize_token, $request_uri ); // Append it
+		    $args['headers']['Authorization'] = "token {$this->authorize_token}"; // Set the headers
 	        }
 
-	        $response = json_decode( wp_remote_retrieve_body( wp_remote_get( $request_uri ) ), true ); // Get JSON and parse it
+	        $response = json_decode( wp_remote_retrieve_body( wp_remote_get( $request_uri, $args ) ), true ); // Get JSON and parse it
 
 	        if( is_array( $response ) ) { // If it is an array
 	            $response = current( $response ); // Get the first item
-	        }
-
-	        if( $this->authorize_token ) { // Is there an access token?
-	            $response['zipball_url'] = add_query_arg( 'access_token', $this->authorize_token, $response['zipball_url'] ); // Update our zip url with token
 	        }
 
 	        $this->github_response = $response; // Set it to our property
@@ -71,6 +69,14 @@ class Smashing_Updater {
 		add_filter( 'pre_set_site_transient_update_plugins', array( $this, 'modify_transient' ), 10, 1 );
 		add_filter( 'plugins_api', array( $this, 'plugin_popup' ), 10, 3);
 		add_filter( 'upgrader_post_install', array( $this, 'after_install' ), 10, 3 );
+		
+		// Add Authorization Token to download_package
+		add_filter( 'upgrader_pre_download',
+			function() {
+				add_filter( 'http_request_args', [ $this, 'download_package' ], 15, 2 );
+				return false; // upgrader_pre_download filter default return value.
+			}
+		);
 	}
 
 	public function modify_transient( $transient ) {
@@ -140,6 +146,17 @@ class Smashing_Updater {
 
 		}
 		return $result; // Otherwise return default
+	}
+	
+	public function download_package( $args, $url ) {
+
+		if ( null !== $args['filename'] ) {
+			$args = array_merge( $args, array( "headers" => array( "Authorization" => "token {$this->authorize_token}" ) ) );
+		}
+		
+		remove_filter( 'http_request_args', [ $this, 'download_package' ] );
+
+		return $args;
 	}
 
 	public function after_install( $response, $hook_extra, $result ) {
