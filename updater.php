@@ -151,7 +151,9 @@ class Smashing_Updater {
 	public function download_package( $args, $url ) {
 
 		if ( null !== $args['filename'] ) {
-			$args = array_merge( $args, array( "headers" => array( "Authorization" => "token {$this->authorize_token}" ) ) );
+			if( $this->authorize_token ) { 
+				$args = array_merge( $args, array( "headers" => array( "Authorization" => "token {$this->authorize_token}" ) ) );
+			}
 		}
 		
 		remove_filter( 'http_request_args', [ $this, 'download_package' ] );
