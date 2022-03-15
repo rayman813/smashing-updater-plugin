@@ -53,7 +53,7 @@ class Smashing_Updater {
 		$args = array();
 
 	        if( $this->authorize_token ) { // Is there an access token?
-		          $args['headers']['Authorization'] = "token {$this->authorize_token}"; // Set the headers
+		          $args['headers']['Authorization'] = "bearer {$this->authorize_token}"; // Set the headers
 	        }
 
 	        $response = json_decode( wp_remote_retrieve_body( wp_remote_get( $request_uri, $args ) ), true ); // Get JSON and parse it
